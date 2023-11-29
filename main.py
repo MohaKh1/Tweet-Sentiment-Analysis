@@ -26,16 +26,93 @@ elon_musk_tweets['filtered_sentiment_score'] = elon_musk_tweets['filtered_sentim
 elon_musk_tweets['model_sentiment_score'] = elon_musk_tweets['model_sentiment'].apply(lambda x: {'positive': 1, 'neutral': 0.5, 'negative': 0}.get(x, None))
 
 # Sentiment trend analysis over time
+# sns.set(style="whitegrid")
+# plt.figure(figsize=(15, 5))
+# plt.subplot(1, 3, 1)
+# sns.lineplot(x='Datetime', y='original_sentiment_score', data=elon_musk_tweets)
+# plt.subplot(1, 3, 2)
+# sns.lineplot(x='Datetime', y='filtered_sentiment_score', data=elon_musk_tweets)
+# plt.subplot(1, 3, 3)
+# sns.lineplot(x='Datetime', y='model_sentiment_score', data=elon_musk_tweets)
+# plt.tight_layout()
+# plt.show()
+
+
+# Calculating daily average sentiment scores
+# columns_for_mean = ['original_sentiment_score', 'filtered_sentiment_score', 'model_sentiment_score']
+
+# # Calculating daily average sentiment scores
+# daily_avg_sentiments = elon_musk_tweets.groupby(elon_musk_tweets['Datetime'].dt.date)[columns_for_mean].mean()
+
+# # Sentiment trend analysis over time with daily averages
+# sns.set(style="whitegrid")
+# plt.figure(figsize=(15, 5))
+
+# # Plotting daily average for original sentiment scores
+# plt.subplot(1, 3, 1)
+# sns.lineplot(data=daily_avg_sentiments, x=daily_avg_sentiments.index, y='original_sentiment_score')
+# plt.title('Daily Average Original Sentiment')
+# plt.xlabel('Date')
+# plt.ylabel('Average Sentiment Score')
+
+# # Plotting daily average for filtered sentiment scores
+# plt.subplot(1, 3, 2)
+# sns.lineplot(data=daily_avg_sentiments, x=daily_avg_sentiments.index, y='filtered_sentiment_score')
+# plt.title('Daily Average Filtered Sentiment')
+# plt.xlabel('Date')
+# plt.ylabel('Average Sentiment Score')
+
+# # Plotting daily average for model sentiment scores
+# plt.subplot(1, 3, 3)
+# sns.lineplot(data=daily_avg_sentiments, x=daily_avg_sentiments.index, y='model_sentiment_score')
+# plt.title('Daily Average Model Sentiment')
+# plt.xlabel('Date')
+# plt.ylabel('Average Sentiment Score')
+
+# plt.tight_layout()
+# plt.show()
+
+
+# Convert 'Datetime' to a period format for easy monthly grouping
+elon_musk_tweets['month_year'] = elon_musk_tweets['Datetime'].dt.to_period('M')
+
+# Select only the columns needed for calculating the mean
+columns_for_mean = ['original_sentiment_score', 'filtered_sentiment_score', 'model_sentiment_score']
+
+# Calculating monthly average sentiment scores
+monthly_avg_sentiments = elon_musk_tweets.groupby('month_year')[columns_for_mean].mean()
+
+# Convert the Period index back to datetime (or string) for plotting
+monthly_avg_sentiments.index = monthly_avg_sentiments.index.to_timestamp()
+
+# Sentiment trend analysis over time with monthly averages
 sns.set(style="whitegrid")
 plt.figure(figsize=(15, 5))
+
+# Plotting monthly average for original sentiment scores
 plt.subplot(1, 3, 1)
-sns.lineplot(x='Datetime', y='original_sentiment_score', data=elon_musk_tweets)
+sns.lineplot(data=monthly_avg_sentiments, x=monthly_avg_sentiments.index, y='original_sentiment_score')
+plt.title('Monthly Average Original Sentiment')
+plt.xlabel('Month-Year')
+plt.ylabel('Average Sentiment Score')
+
+# Plotting monthly average for filtered sentiment scores
 plt.subplot(1, 3, 2)
-sns.lineplot(x='Datetime', y='filtered_sentiment_score', data=elon_musk_tweets)
+sns.lineplot(data=monthly_avg_sentiments, x=monthly_avg_sentiments.index, y='filtered_sentiment_score')
+plt.title('Monthly Average Filtered Sentiment')
+plt.xlabel('Month-Year')
+plt.ylabel('Average Sentiment Score')
+
+# Plotting monthly average for model sentiment scores
 plt.subplot(1, 3, 3)
-sns.lineplot(x='Datetime', y='model_sentiment_score', data=elon_musk_tweets)
+sns.lineplot(data=monthly_avg_sentiments, x=monthly_avg_sentiments.index, y='model_sentiment_score')
+plt.title('Monthly Average Model Sentiment')
+plt.xlabel('Month-Year')
+plt.ylabel('Average Sentiment Score')
+
 plt.tight_layout()
 plt.show()
+
 
 # Word frequency analysis (word clouds)
 def clean_text(text):
